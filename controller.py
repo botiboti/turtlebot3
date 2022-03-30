@@ -10,7 +10,7 @@ def callback(msg):
     move.linear.z = 0.0
     pub.publish(move)
 
-rospy.init_node('kick_control')
+rospy.init_node('controller')
 sub = rospy.Subscriber('/odom', Odometry, callback)
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 move = Twist()
