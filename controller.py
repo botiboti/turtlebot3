@@ -5,6 +5,7 @@ from geometry_msgs.msg import Twist
 def callback(msg):
     now = rospy.get_rostime()
     print(rospy.loginfo("Secs: %i Nsecs: %i", now.secs, now.nsecs))
+    print(msg.pose.pose)
     move.linear.x = 0.5
     move.linear.z = 0.0
     pub.publish(move)
