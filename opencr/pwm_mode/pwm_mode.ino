@@ -54,22 +54,31 @@ const float DXL_PROTOCOL_VERSION = 2.0;
 
 Dynamixel2Arduino dxl(DXL_SERIAL, DXL_DIR_PIN);
 
-float x_1 = 1;
-float x_2 = -1;
+float x_1l = 1;
+float x_2l = -1;
+float x_1r = 1;
+float x_2r = -1;
   
-float x_1_a = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-float x_2_a = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+float x_1_al = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+float x_2_al = sin(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+float x_1_ar = cos(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+float x_2_ar = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
 
-float x_1_t = 0.0;
-float x_2_t = 0.0;
+float x_1_tl = 0.0;
+float x_2_tl = 0.0;
+float x_1_tr = 0.0;
+float x_2_tr = 0.0;
  
 const int a = 4;
 float k = 8.0;
+float h = 0.1;
 
 long loop_timer = millis();
 float tau = 0.0;
-float F = 0.0;
-float M = 0.0;
+float Fl = 0.0;
+float Ml = 0.0;
+float Fr = 0.0;
+float Mr = 0.0;
 
 void setup() {
   // Use UART port of DYNAMIXEL Shield to debug.
@@ -90,18 +99,33 @@ void setup() {
 }
 
 void loop() {
-  x_1_t = 2*y(x_1)-1;
-  x_2_t = 2*y(x_2)-1;
+  x_1_tl = 2*y(x_1l)-1;
+  x_2_tl = 2*y(x_2l)-1;
+  x_1_tr = 2*y(x_1r)-1;
+  x_2_tr = 2*y(x_2r)-1;
 
-  F = k*(x_1_t-x_1_a)*x_2_a-k*(x_2_t-x_2_a)*x_1_a;
-  M = 100*tanh(F);
-  // Set Goal PWM using percentage (-100.0 [%] ~ 100.0 [%])
-  //dxl.setGoalPWM(DXL_ID, -40.8, UNIT_PERCENT);
- 
-  DEBUG_SERIAL.println(M);
+  Fl = k*(x_1_tl-x_1_al)*x_2_al-k*(x_2_tl-x_2_al)*x_1_al;
+  Ml = 100*tanh(Fl);
+  Fr = k*(x_1_tr-x_1_ar)*x_2_ar-k*(x_2_tr-x_2_ar)*x_1_ar;
+  Mr = 100*tanh(Fr);
   
+  // Set Goal PWM using percentage (-100.0 [%] ~ 100.0 [%])
+  dxl.setGoalPWM(DXL_1, Ml, UNIT_PERCENT);
+  dxl.setGoalPWM(DXL_2, Mr, UNIT_PERCENT);
+    
+  // update x's and x_a's 
+  x_1_al = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+  x_2_al = sin(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+  x_1_ar = cos(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+  x_2_ar = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+
   tau = millis()-loop_timer;
-  DEBUG_SERIAL.println(tau);
+
+  x_1l += h*(x_1_al-x_1l)/tau;
+  x_2l += h*(x_2_al-x_2l)/tau;
+  x_1r += h*(x_1_ar-x_1r)/tau;
+  x_2r += h*(x_2_ar-x_2r)/tau;  
+  
   loop_timer = millis();
   delay(250);
 }
