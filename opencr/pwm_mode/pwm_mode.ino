@@ -48,47 +48,64 @@
 #endif
  
 
-const uint8_t DXL_ID = 1;
+const uint8_t DXL_1 = 1;
+const uint8_t DXL_2 = 2;
 const float DXL_PROTOCOL_VERSION = 2.0;
 
 Dynamixel2Arduino dxl(DXL_SERIAL, DXL_DIR_PIN);
 
-void setup() {
-  // put your setup code here, to run once:
+float x_1 = 1;
+float x_2 = -1;
   
+float x_1_a = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+float x_2_a = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+
+float x_1_t = 0.0;
+float x_2_t = 0.0;
+ 
+const int a = 4;
+float k = 8.0;
+
+long loop_timer = millis();
+float tau = 0.0;
+float F = 0.0;
+float M = 0.0;
+
+void setup() {
   // Use UART port of DYNAMIXEL Shield to debug.
   DEBUG_SERIAL.begin(115200);
   
-  // Set Port baudrate to 57600bps. This has to match with DYNAMIXEL baudrate.
+  // Set Port baudrate to 1000000 bps. This has to match with DYNAMIXEL baudrate.
   dxl.begin(1000000);
   // Set Port Protocol Version. This has to match with DYNAMIXEL protocol version.
   dxl.setPortProtocolVersion(DXL_PROTOCOL_VERSION);
-  // Get DYNAMIXEL information
-  dxl.ping(DXL_ID);
 
   // Turn off torque when configuring items in EEPROM area
-  dxl.torqueOff(DXL_ID);
-  dxl.setOperatingMode(DXL_ID, OP_PWM);
-  dxl.torqueOn(DXL_ID);
+  dxl.torqueOff(DXL_1);
+  dxl.setOperatingMode(DXL_1, OP_PWM);
+  dxl.torqueOn(DXL_1);
+  dxl.torqueOff(DXL_2);
+  dxl.setOperatingMode(DXL_2, OP_PWM);
+  dxl.torqueOn(DXL_2);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-   
-  // Please refer to e-Manual(http://emanual.robotis.com) for available range of value. 
-  // Set Goal PWM using RAW unit
-  dxl.setGoalPWM(DXL_ID, 300);
-  delay(1000);
-  // Print present PWM
-  DEBUG_SERIAL.print("Present PWM(raw) : ");
-  DEBUG_SERIAL.println(dxl.getPresentPWM(DXL_ID));
-  delay(1000);
+  x_1_t = 2*y(x_1)-1;
+  x_2_t = 2*y(x_2)-1;
 
+  F = k*(x_1_t-x_1_a)*x_2_a-k*(x_2_t-x_2_a)*x_1_a;
+  M = 100*tanh(F);
   // Set Goal PWM using percentage (-100.0 [%] ~ 100.0 [%])
-  dxl.setGoalPWM(DXL_ID, -40.8, UNIT_PERCENT);
-  delay(1000);
-  DEBUG_SERIAL.print("Present PWM(ratio) : ");
-  DEBUG_SERIAL.println(dxl.getPresentPWM(DXL_ID, UNIT_PERCENT));
-  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID, UNIT_DEGREE));
-  delay(1000);
+  //dxl.setGoalPWM(DXL_ID, -40.8, UNIT_PERCENT);
+ 
+  DEBUG_SERIAL.println(M);
+  
+  tau = millis()-loop_timer;
+  DEBUG_SERIAL.println(tau);
+  loop_timer = millis();
+  delay(250);
+}
+
+float y(float x) {
+  return 1/(1+exp(-a*x));
 }
