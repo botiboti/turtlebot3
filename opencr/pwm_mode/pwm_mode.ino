@@ -74,7 +74,7 @@ float k = 8.0;
 float h = 0.1;
 
 long loop_timer = millis();
-float tau = 0.0;
+float tau = 250.0;
 float Fl = 0.0;
 float Ml = 0.0;
 float Fr = 0.0;
@@ -119,7 +119,7 @@ void loop() {
   x_1_ar = cos(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
   x_2_ar = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
 
-  tau = millis()-loop_timer;
+  h = millis()-loop_timer;
 
   x_1l += h*(x_1_al-x_1l)/tau;
   x_2l += h*(x_2_al-x_2l)/tau;
