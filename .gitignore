@@ -1,2 +1,8 @@
 log.txt
 data.txt
+lit/main.aux
+lit/main.bcf
+lit/main.log
+lit/main.out
+lit/main.run.xml
+lit/main.toc

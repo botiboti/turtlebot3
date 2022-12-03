@@ -1,221 +1,124 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
-\bibliographystyle{plain}
+\usepackage{biblatex}
+\usepackage{comment}
+\addbibresource{src/referenciák.bib}
 
 \title{Turtlebot3 docs}
 \author{}
 \date{}
+\renewcommand*\contentsname{Tartalom}
 
 \begin{document}
 \maketitle
 
-% ez a hasznos infó rész még csak piszkozat, törlöm majd miután kimerítettem az egyes témákat
-\section{Hasznos információk}
-    ROS bevezető:
-    \begin{enumerate}
-        \item \href{http://wiki.ros.org/ROS/Tutorials}{ROS}
-    \end{enumerate}
-    
-    TurtleBot3 - a robot összerakásához az útbaigazítás itt található meg, valamint a kezelése a ROS környezetben billentyűzettel, példaprogramokkal, joystick-el stb.:
-    \begin{enumerate}
-        \item \href{https://emanual.robotis.com/docs/en/platform/turtlebot3/overview/}{TurtleBot3 Overview}
-    \end{enumerate}
-    
-    Rospy - Python kliens a ROS-hoz. Az első linken példaprogramok találhatóak, a második linken a dokumentáció, hogyan kell feliratkozni egy ROS topic-ra, hogyan kell egy topic-ot létrehozni, stb. Itt példázva látható hogyan lehet egy egyszerű script-tel irányítani a robotot:
-    \begin{enumerate}
-        \item \href{https://github.com/markwsilliman/turtlebot/} {A "getting started" guide for developers interested in robotics}
-        \item \href{http://wiki.ros.org/rospy/Overview}{Rospy doksi}
-    \end{enumerate}
-    
-    OpenCR: - A motrokat irányító modul, a motorkontroller. Itt fontos megemlíteni, hogy több könyvtár is van mellyel a motrokat irányíthatjuk. A motrokat tudjuk konfigurálni különböző vezérlési módra, állíthatunk baud rate-t, stb.:
-    \begin{enumerate}
-        \item \href{https://www.youtube.com/watch?v=0_M0Da9SHDw}{Dynamixel2Arduino - gyors és egyszerű vezérlése a motroknak Arduino IDE-ben}
-        \item \href{https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/}{Dynamixel sdk - ezt a könyvtárat használja a ROS}
-    \end{enumerate}
-    
-    Dynamixel motrok:
-    \begin{enumerate}
-        \item \href{https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/}{Motorleírás}
-    \end{enumerate}
-
-\newpage
+\tableofcontents
 
 \section{ROS}
 \subsection{Ismertető}
-A ROS-ban a számítások elvégzéséhez ROS-csomópontok néven ismert szoftverkomponenseket használják. A ROS-csomópontok, a mester, a paraméterkiszolgáló, az üzenetek, a témák, a szolgáltatások és a táskák a számítási gráf központi elemei.
-A gráf minden egyes fogalma más-más módon járul hozzá a gráfhoz.
+A ROS-ban a számítások elvégzéséhez ROS csomópontok néven ismert szoftverkomponenseket használják. A csomópontok, a mester, a paraméterkiszolgáló, az üzenetek, a témák, a szolgáltatások és a táskák a számítási gráf központi elemei, melyek mind más-más módon járulnak hozzá ehhez a ROS gráfhoz.
 
-A \href{http://wiki.ros.org/ros_comm}{ros\_comm} nevű verem tartalmazza a ROS kommunikációval kapcsolatos csomagjait, beleértve az olyan alapvető klienskönyvtárakat, mint a roscpp és a rospython, valamint az olyan fogalmak megvalósítását, mint a témák, csomópontok, paraméterek és szolgáltatások. Ezek a fogalmak további vizsgálatához ez a verem olyan eszközöket is tartalmaz, mint a rostopic, rosparam, rosservice és rosnode.
+A \href{http://wiki.ros.org/ros_comm}{ros\_comm} nevű verem tartalmazza a ROS kommunikációval kapcsolatos csomagjait, beleértve az olyan alapvető klienskönyvtárakat, mint a \href{http://wiki.ros.org/roscpp}{roscpp} és a \href{http://wiki.ros.org/rospy}{rospy}, valamint az olyan fogalmak megvalósítását, mint a témák, csomópontok, paraméterek és szolgáltatások. Ezek a fogalmak további megismeréséhez a verem olyan eszközöket is tartalmaz, mint a \href{http://wiki.ros.org/rostopic}{rostopic}, \href{http://wiki.ros.org/rosparam}{rosparam}, \href{http://wiki.ros.org/rosservice}{rosservice} és \href{http://wiki.ros.org/rosnode}{rosnode}.
 
-A ROS kommunikációs middleware csomagok együttesen alkotják a ROS Graph réteget, a \href{http://wiki.ros.org/ros_comm}{ros\_comm} stack tartalmazza ezeket a csomagokat.
+A ROS kommunikációs middleware csomagjai együttesen alkotják a ROS gráf réteget, a \href{http://wiki.ros.org/ros_comm}{ros\_comm} stack tartalmazza ezeket a csomagokat.
 
-Az ROS gráfok fogalmai:
+A ROS gráfok fogalmai:
 \begin{itemize}
-    \item Csomópontok: A számításokat végző folyamatokat csomópontoknak nevezzük, melyek létrehozásához a roscpp és rospy ROS klienskönyvtárakat használjuk. Ezekben a kommunikáció több formáját is megvalósíthatjuk a klienskönyvtári API-k segítségével. Egy robotban számos csomópont lesz a különböző feladatok elvégzésére, valamint ROS kommunikációs protokollok segítségével kommunikálhatnak egymással és oszthatnak meg adatokat. A ROS-csomópontok egyik célja, hogy inkább kis folyamatokat építsünk ki minimális funkcionalitással, mint komplexet, emiatt egyszerűen hibakereshetők.
-    \item Mester: A ROS Master(mester) névkeresést és regisztrációt kínál a többi csomópont számára, enélkül a csomópontok nem tudják megtalálni egymást, nem tudnak kommunikálni egymással, és nem tudnak szolgáltatásokat használni. Egy elosztott rendszerben a mestert egyetlen számítógépen kell futtatni, majd a távoli csomópontok ehhez a mesterhez tudnak csatlakozni, hogy megtalálják egymást.
-    \item  Paraméter-kiszolgáló: A paraméterkiszolgáló használatával egy helyen tarthatja az adatokat, ennek segítségével minden csomópont hozzáférhet ezekhez az értékekhez és ellenőrizheti azokat. A ROS Master tartalmaz egy paraméterkiszolgálót.
-    \item Üzenetek: Az üzenetek a csomópontok közötti kommunikáció elsődleges eszközei. Egyszerűen fogalmazva, az üzenet egy olyan adatszerkezet, amely egy tipizált mezővel rendelkezik, amely egy adatgyűjteményt tartalmazhat, és továbbítható egy másik csomópontnak. A ROS-üzenetek egész, lebegőpontos, Boolean és más általános primitív típusokat támogatnak, de szerkeszthetünk saját üzenettípust is akár.
-    \item Témák: A ROS-ban minden kommunikáció egyedi névvel rendelkező topic-okon (témakon), megnevezett buszokon keresztül történik. Azt mondhatjuk, hogy egy csomópont egy topicot publikál, amikor egy topicon keresztül üzenetet küld, valamint feliratkozik egy topicra, amelyen keresztül üzeneteket kap. A feliratkozó csomópont és a publikáló csomópont nem tudnak egymásról, így olyan témákra is lehet feliratkozni, amelyeknek nincs kiadója. Más szóval az információ létrehozása és fogyasztása különálló folyamat. Amíg egy csomópont rendelkezik a megfelelő üzenettípussal, addig hozzáférhet a témához és küldhet rajta keresztül adatokat.
-    \item Szolgáltatások: Ha egy robotalkalmazás kérés-válasz interakciót igényel, a publikálás/feliratkozás megközelítés önmagában nem biztos, hogy elegendő. A kérés/válasz típusú interakcióra akkor lehet szükség, ha elosztott rendszerrel dolgozunk, mivel a publikálás/feliratkozás architektúra lényegében egyirányú szállítási rendszer. Ezekben a helyzetekben ROS-szolgáltatásokat használnak. Lehetséges egy olyan szolgáltatásdefiníció, amely két részből áll, egy a kérésekhez és egy a válaszokhoz. A ROS szolgáltatások segítségével létrehozhatunk egy kiszolgáló csomópontot és egy kliens csomópontot. Amikor az ügyfélcsomópont kérő üzenetet küld a kiszolgálónak, az válaszol, és az eredményt átadja az ügyfélnek. A kiszolgáló csomópont egy név alatt nyújtja a szolgáltatást és lehetséges, hogy az ügyfélnek várnia kell, amíg a kiszolgáló válaszol.
-    \item Táskák: A ROS kommunikációs adatok tárolása és lejátszása táskákban történik. A táskák kulcsfontosságú adattárolási mechanizmust jelentenek az érzékelőadatok számára, amelyek megszerzése kihívást jelenthet, de a robotalgoritmusok létrehozásához és teszteléséhez szükségesek. A bonyolult robotmechanizmusokkal való munka során a táskák rendkívül praktikus funkciót jelentenek.
+    \item Csomópontok: A számításokat végző folyamatokat csomópontoknak nevezzük, melyek létrehozásához a roscpp és rospy klienskönyvtárakat használjuk. Ezekkel a kommunikáció több formáját is megvalósíthatjuk az API-k segítségével. Egy robotban számos csomópont lehet a különböző feladatok elvégzésére, valamint ROS kommunikációs protokollok segítségével kommunikálhatnak egymással és oszthatnak meg adatokat. A csomópontok egyik célja, hogy inkább kis folyamatokat építsünk ki minimális funkcionalitással, mint egy komplexet, mivel egyszerűbb a hibakeresés.
+    \item Mester: A mester névkeresést és regisztrációt kínál a többi csomópont számára, enélkül a csomópontok nem tudják megtalálni egymást, nem tudnak kommunikálni egymással, és nem tudnak szolgáltatásokat használni. Egy elosztott rendszerben a mester egy számítógépen fut, majd a csomópontok ehhez a mesterhez tudnak csatlakozni, hogy megtalálják egymást.
+    \item  Paraméter szerver: A paraméter szerver használatával egy helyen tarthatja az adatokat, ennek segítségével minden csomópont hozzáférhet ezekhez az értékekhez és ellenőrizheti azokat. A mester tartalmaz egy paraméter szervert.
+    \item Üzenetek: Az üzenetek a csomópontok közötti kommunikáció elsődleges eszközei. Egyszerűen fogalmazva, az üzenet egy olyan adatszerkezet, amely egy tipizált mezővel rendelkezik, amely egy adatgyűjteményt tartalmazhat, és továbbítható egy másik csomópontnak. Az üzenetek egész, lebegőpontos, Boolean és más általános primitív típusokat támogatnak, de szerkeszthetőek saját üzenettípusok.
+    \item Témák: A ROS-ban minden kommunikáció egyedi névvel rendelkező témákon, azaz csatornákon keresztül történik. Azt mondhatjuk, hogy egy csomópont egy témát publikál, amikor egy témán keresztül üzenetet küld, vagy feliratkozik egy témára, amelyen keresztül üzeneteket kap. A feliratkozó csomópont és a publikáló csomópont nem tudnak egymásról, így olyan témákra is lehet feliratkozni, amelyeknek nincs kiadója. Más szóval az információ létrehozása és fogyasztása különálló folyamat. Amíg egy csomópont rendelkezik a megfelelő üzenettípussal, addig hozzáférhet a témához és küldhet rajta keresztül adatokat.
+    \item Szolgáltatások: Ha egy robotalkalmazás kérés-válasz interakciót igényel, a publikálás/feliratkozás megközelítés nem biztos elegendő. A kérés/válasz típusú interakcióra akkor lehet szükség, ha elosztott rendszerrel dolgozunk, mivel a publikálás/feliratkozás architektúra egy egyirányú szállítási rendszer. Ezekben a helyzetekben szolgáltatásokat használnak. Létezik olyan szolgáltatásdefiníció, amely két részből áll, egy a kéréseknek és egy a válaszoknak. A szolgáltatások segítségével létrehozhatunk egy szerver csomópontot és egy kliens csomópontot. Amikor a kliens csomópont kérelmez a szervertől, az válaszol, és az eredményt átadja a kliensnek. A szerver csomópont egy név alatt nyújtja a szolgáltatást és lehetséges, hogy az ügyfélnek várnia kell, amíg a szerver válaszol.
+    \item Táskák: A ROS kommunikációs adatok tárolása és lejátszása táskákban történik, melyek kulcsfontosságú adattárolási mechanizmust jelentenek a szenzoradatok számára. Ezek megszerzése kihívást jelenthet, de különböző projektek létrehozásához és teszteléséhez esedékesen szükségesek.
 \end{itemize}
-Az ilyen típusú gráfok az \href{http://wiki.ros.org/rqt_graph}{rqt\_graph} nevű eszközzel generálhatók.
+Az ilyen típusú gráfok az \href{http://wiki.ros.org/rqt_graph}{rqt\_graph} nevű eszközzel generálhatók, a csomópontok közti kommunikációs folyamát ábrázolja.
 
-\subsection{A ROS csomópontok}
-A ROS klienskönyvtárak, például a roscpp és a rospy használatával hozhatunk létre ROS-csomópontokat, amelyek számításokat végeznek. A ROS-témákat, szolgáltatásokat és paramétereket egy csomópont használhatja más csomópontokhoz való kapcsolódáshoz. Egy robotban számos csomópont lehet jelen, például olyanok, amelyek feldolgozzák a kameraképeket, kezelik a robot soros kommunikációját, kiszámítják az odometriát stb.
-
-A rendszer hibatűrővé tehető a csomópontok használatával. Egy teljes robotrendszer akkor is tovább működhet, ha egy csomópont összeomlik. Mivel minden egyes csomópont csak egy funkciót kezel, a csomópontok megkönnyítik a hibakeresést.
-
-Minden működő csomópontnak nevet kell adni, hogy a rendszer többi része felismerhesse. Például a /camera\_node lehet egy olyan csomópont neve, amely kameraképeket sugároz.
-
-A rosbash eszközzel a ROS-csomópontokat vizsgálhatjuk. A rosnode parancs segítségével információkat kaphatunk egy ROS-csomópontról. Itt vannak a rosnode használatai
-\begin{itemize}
-    \item
-    \begin{verbatim}
-        $ rosnode info [node_name]
-    \end{verbatim}ez kiírja a csomópontra vonatkozó információkat
-    \item
-    \begin{verbatim}
-        $ rosnode kill [node_name]
-    \end{verbatim}Megől egy futó csomópontot
-    \item
-    \begin{verbatim}
-        $ rosnode list
-    \end{verbatim}Ez listázza a futó csomópontokat
-    \item
-    \begin{verbatim}
-        $ rosnode machine [machine_name]
-    \end{verbatim}Ez felsorolja az adott gépen futó csomópontokat vagy a gépek listáját.
-    \item
-    \begin{verbatim}
-        $ rosnode ping
-    \end{verbatim} Ez ellenőrzi a csomópont csatlakoztathatóságát.
-    \item
-    \begin{verbatim}
-        $ rosnode cleanup
-    \end{verbatim}Ez eltörli az elérhetetlen csomópontok regisztrációját.
-\end{itemize}
+\subsection{ROS csomópontok}
+A ROS klienskönyvtárak, például a \href{http://wiki.ros.org/roscpp}{roscpp} és a \href{http://wiki.ros.org/rospy}{rospy} használatával hozhatunk létre csomópontokat, amelyek számításokat végeznek. A témákat, szolgáltatásokat és paramétereket egy csomópont használhatja más csomópontokkal való kommunikációhoz. Egy robotban számos csomópont lehet jelen, amelyek feldolgozzák a kameraképeket, kezelik a robot soros kommunikációját stb. A rendszer hibatűrővé tehető a csomópontok használatával. Egy teljes robotrendszer akkor is tovább működhet, ha egy csomópont megszűnik működni. Mivel minden egyes csomópont csak egy funkciót kezel, a csomópontok megkönnyítik a hibakeresést.
+A rosbash eszközzel csomópontokat vizsgálhatunk.
+\begin{verbatim}
+    $ rosnode info [node_name]
+    $ rosnode kill [node_name]
+    $ rosnode list
+    $ rosnode machine [machine_name]
+    $ rosnode ping
+    $ rosnode cleanup
+\end{verbatim}
 
 
 
 \subsection{ROS üzenetek}
-A ROS-csomópontok üzeneteket cserélnek egymással egy témába való üzenetküldéssel. Az üzenetek egy egyszerű adatstruktúra, amely mezőtípusokkal rendelkezik, ahogyan azt korábban már tárgyaltuk. A ROS-üzenet a szabványos primitív adattípusokat és a primitív típusokból álló tömböket támogatja.
+A csomópontok üzeneteket cserélnek egymással egy témába való publikálással/feliratkozással. Az üzenetek egyszerű adatstruktúrák, amelyek különböző mezőtípusokkal rendelkeznek, ahogyan fennebb említettük. Az üzenetek a szabványos primitív adattípusokat és a primitív típusokból álló tömböket támogatják.
+\begin{comment}
+A szolgáltatáshívások egy másik módszer, amellyel a csomópontok kommunikálhatnak. A szolgáltatások üzenetek, és az srv fájl tartalmazza az egyes szolgáltatási üzenettípusok definícióit.    
+\end{comment}
 
-A szolgáltatáshívások egy másik módszer, amellyel a csomópontok kommunikálhatnak. A szolgáltatások üzenetek, és az srv fájl tartalmazza az egyes szolgáltatási üzenettípusok definícióit.
-
-A következő technikával hozzáférhetünk az üzenetspecifikációhoz. Például az std\_msgs/String használatával megkaphatjuk az std\_msgs/msg/String.msg fájlt. A string üzenet definíciójához a roscpp kliens használata esetén be kell vennünk az std\_msgs/String.h állományt.
-
-Annak megállapításakor, hogy a kiadó és az előfizető ugyanazokat az üzenetadattípusokat cseréli-e ki, a ROS az MD5 ellenőrző összegeket is összehasonlítja.
-
-A ROS-üzenetekkel kapcsolatos információkhoz a ROS beépített eszközöket tartalmaz, a rosmsg-et. A következő parancsokat használhatjuk: 
-\begin{itemize}
-    \item
-    \begin{verbatim}
-        $ rosmsg show [message]
-    \end{verbatim}Ez mutatja az üzenet leírását
-    \item
-    \begin{verbatim}
-        $ rosmsg list
-    \end{verbatim}Ez felsorolja az összes üzenetet
-    \item
-    \begin{verbatim}
-        $ rosmsg md5 [message]
-    \end{verbatim}Ez megjeleníti az üzenet md5összegét
-    \item
-    \begin{verbatim}
-        $ rosmsg package [package_name]
-    \end{verbatim}Ez felsorolja a csomagban lévő üzeneteket
-    \item
-    \begin{verbatim}
-        $ rosmsg packages [package_1] [package_2]
-    \end{verbatim}Ez felsorolja az üzeneteket tartalmazó csomagokat
-\end{itemize}
+A következő technikával hozzáférhetünk az üzenetspecifikációhoz. Például az \begin{verbatim}
+    st\_msgs/String
+\end{verbatim} használatával megkaphatjuk az \begin{verbatim}
+    std\_msgs/msg/String.msg
+\end{verbatim} fájlt. A string üzenet definíciójához a \href{http://wiki.ros.org/roscpp}{roscpp} kliens használata esetén be kell importálni az \begin{verbatim}
+    std\_msgs/String.h
+\end{verbatim} állományt, hasonlóan a \href{http://wiki.ros.org/rospy}{rospy} esetén a String modult.
+\begin{comment}
+Annak megállapításakor, hogy a szerver és a kliens ugyanazokat az üzenetadattípusokat használja-e, a ROS az MD5 ellenőrző összegeket is összehasonlítja.    
+\end{comment}
+Az üzenetekkel kapcsolatos információkért létezik a rosmsg. A következő parancsokat használhatjuk: 
+\begin{verbatim}
+    $ rosmsg show [message]
+    $ rosmsg list
+    $ rosmsg md5 [message]
+    $ rosmsg package [package_name]
+    $ rosmsg packages [package_1] [package_2]
+\end{verbatim}
 
 \subsection{ROS témák}
-A buszok olyan ROS-témák, amelyeken keresztül a ROS-csomópontok kommunikálnak egymással. A topikok anonim publikálási és feliratkozási képessége azt jelenti, hogy az üzenetek létrehozása és fogyasztása különálló folyamatok. A ROS-csomópontok csak a téma nevét ellenőrzik, valamint azt, hogy a kiadó és a feliratkozó üzenettípusa megegyezik-e; nem érdekli őket, hogy melyik csomópont publikálja vagy iratkozik fel a témákra.
+Csomóponti kommunikációt szolgálnak. A topikok anonim publikálási és feliratkozási képessége azt jelenti, hogy az üzenetek létrehozása és fogyasztása különálló folyamatok. A ROS-csomópontok csak a téma nevét ellenőrzik, valamint azt, hogy a kiadó és a feliratkozó üzenettípusa megegyezik-e; nem érdekli őket, hogy melyik csomópont publikálja vagy iratkozik fel a témákra.
 
 A topikok csak egyirányú kommunikációt tesznek lehetővé; ha kérés-válasz kommunikációt akarunk kiépíteni, akkor ROS-szolgáltatásokat kell használnunk.
 
 A ROS-csomópontok a TCP/IP-alapú TCPROS transzportot használják a topikokhoz való csatlakozáshoz. A ROS-ban ezt a technikát használják alapértelmezett szállítási mechanizmusként. A kommunikáció másik formája az UDPROS, amely kizárólag a távműködtetésre alkalmas, és alacsony késleltetésű, laza szállítást biztosít.
 
 A ROS téma eszközzel a ROS témákról kaphatunk információkat. Példa:
-\begin{itemize}
-    \item
-    \begin{verbatim}
-        $ rostopic bw /topic
-    \end{verbatim}Ez a parancs megjeleníti az adott téma által használt sávszélességet.
-    \item
-    \begin{verbatim}
-        $ rostopic echo /topic
-    \end{verbatim}Ez a parancs kiírja a megadott téma tartalmát.
-    \item
-    \begin{verbatim}
-        $ rostopic find /message_type
-    \end{verbatim}Ez a parancs megkeresi a megadott üzenettípust használó témákat.
-    \item
-    \begin{verbatim}
-        $ rostopic hz /topic
-    \end{verbatim}Ez a parancs megjeleníti az adott téma publikálási arányát.
-    \item
-    \begin{verbatim}
-        $ rostopic info /topic
-    \end{verbatim}Ez a parancs információkat nyomtat ki egy aktív témáról.
-    \item
-    \begin{verbatim}
-        $ rostopic list
-    \end{verbatim}Ez a parancs felsorolja az összes aktív témát a ROS rendszerben.
-    \item
-    \begin{verbatim}
-        $ rostopic pub /topic message_type args
-    \end{verbatim}Ezzel a paranccsal közzétehet egy értéket egy üzenettípusú témában.
-    \item
-    \begin{verbatim}
-        $ rostopic type /topic
-    \end{verbatim}Ez megjeleníti az adott téma üzenettípusát.
-\end{itemize}
+\begin{verbatim}
+    $ rostopic bw /topic
+    $ rostopic echo /topic
+    $ rostopic find /message_type
+    $ rostopic hz /topic
+    $ rostopic info /topic
+    $ rostopic list
+    $ rostopic pub /topic message_type args
+    $ rostopic type /topic
+\end{verbatim}
 
 
 \subsection{ROS szolgáltatások}
-A ROS-szolgáltatásokat minden olyan esetben használni kell, amikor kérés/válasz típusú kommunikációra van szükség. A ROS-témák egyirányú jellege miatt ez a fajta kommunikáció nem lehetséges. Az elosztott rendszerek az esetek többségében ROS-szolgáltatásokat alkalmaznak.
+A szolgáltatásokat minden olyan esetben használni kell, amikor kérés/válasz típusú kommunikációra van szükség. A témák egyirányú jellege miatt ez a fajta kommunikáció nem lehetséges. Az elosztott rendszerek az esetek többségében szolgáltatásokat alkalmaznak. A szolgáltatásokat egy üzenetpár határozza meg. Egy srv fájlban meg kell adnunk a kérés adattípusát és a visszatérés adattípusát. Egy csomag belső srv alkönyvtárában találhatók az srv fájlok.
 
-A ROS-szolgáltatásokat egy üzenetpár határozza meg. Egy srv fájlban meg kell adnunk a kérés adattípusát és a visszatérés adattípusát. Egy csomag belső srv alkönyvtárában találhatók az srv fájlok.
+Egy csomópont egyszerre szolgál kliensként és szerverként a szolgáltatások számára, lehetővé téve, hogy a kliensek szolgáltatásokat kérjenek a szerverektől. Az eredmények akkor kerülnek elküldésre a szolgáltatás kliensének, ha a szerver sikeresen végrehajtja a szolgáltatási eljárást.
 
-Egy csomópont egyszerre szolgál kliensként és szerverként a ROS-szolgáltatások számára, lehetővé téve, hogy a kliensek szolgáltatásokat kérjenek a szerverektől. Az eredmények akkor kerülnek elküldésre a szolgáltatás kliensének, ha a szerver sikeresen végrehajtja a szolgáltatási eljárást.
+A következő megközelítéssel például elérhetjük egyes szolgáltatások definíciót, például ha a \begin{verbatim}
+    my\_package/Image
+\end{verbatim} elérheti a 
+\begin{verbatim}
+    my\_package/srv/Image.srv
+\end{verbatim} állományt.
 
-A következő megközelítéssel például elérhetjük a ROS szolgáltatásdefiníciót, páldául ha a my\_package/Image elérheti a my\_package/srv/Image.srv állományt.
+Van egy MD5 ellenőrző összeg, amely a szolgáltatások csomópontjait is ellenőrzi. Csak akkor válaszolhat a szerver az ügyfélnek, ha az összeg megegyezik.
 
-Van egy MD5 ellenőrző összeg, amely a ROS szolgáltatások csomópontjait is ellenőrzi. Ha az összeg megegyezik, csak a szerver válaszolhat az ügyfélnek.
-
-Két ROS-eszköz áll rendelkezésre a ROS-szolgáltatás megismeréséhez. A különböző szolgáltatástípusok megismeréséhez használja az első eszközt, a rossrv-t, amely megegyezik a rosmsg-gel. A következő parancs, a rosservice, az aktuálisan aktív ROS-szolgáltatások listázására és lekérdezésére szolgál.
+Két ROS eszköz áll rendelkezésre a szolgáltatások megismeréséhez. A különböző szolgáltatástípusok megismeréséhez használható az első eszköz, a rossrv-t, amely megegyezik a rosmsg-gel. A következő parancs, a rosservice, az aktuálisan aktív szolgáltatások listázására és lekérdezésére szolgál.
 
 Az alábbiakban néhány utasítást olvashat, hogyan használhatja a rosservice eszközt, hogy többet tudjon meg a jelenleg aktív szolgáltatásokról:
-\begin{itemize}
-    \item
-    \begin{verbatim}
-        $ rosservice call /service args
-    \end{verbatim}Ez az eszköz meghívja a szolgáltatást a megadott argumentumokkal.
-    \item
-    \begin{verbatim}
-        $ rosservice find service_type
-    \end{verbatim}Ez a parancs a megadott szolgáltatástípusba tartozó szolgáltatásokat keresi.
-    \item
-    \begin{verbatim}
-        $ rosservice info /services
-    \end{verbatim}Ez információt nyomtat ki az adott szolgáltatásról.
-    \item
-    \begin{verbatim}
-        $ rosservice list
-    \end{verbatim}Ez a parancs felsorolja a rendszerben futó aktív szolgáltatásokat.
-    \item
-    \begin{verbatim}
-        $ rosservice type /service
-    \end{verbatim}Ez a parancs kiírja az adott szolgáltatás típusát.
-    \item
-    \begin{verbatim}
-        $ rosservice uri /service
-    \end{verbatim}Ez az eszköz kiírja a szolgáltatás ROSRPC URI-ját.
-\end{itemize}
+\begin{verbatim}
+    $ rosservice call /service args
+    $ rosservice find service_type
+    $ rosservice info /services
+    $ rosservice list
+    $ rosservice type /service
+    $ rosservice uri /service
+\end{verbatim}
 
 \subsection{ROS táskák}
 A ROS-ban a témák és szolgáltatások üzenetadatait bag-fájlokban tárolják. A bag fájlokat a.bag kiterjesztés jelöli.
@@ -225,14 +128,10 @@ A \href{http://wiki.ros.org/rosbag/Commandline}{rosbag} parancs egy vagy több t
 Az adatnaplózás a rosbag elsődleges felhasználási területe. A robotadatok offline is megjeleníthetők és feldolgozhatók, valamint naplózhatók.
 
 A rosbag fájlokkal való munkához a rosbag parancsra van szükség. A bag fájl rögzítésére és lejátszására szolgáló parancsok a következők:
-\begin{itemize}
-    \item \begin{verbatim}
-        $ rosbag record [topic_1] [topic_2] -o [bag_name]
-    \end{verbatim}A megadott témákat ez a parancs rögzíti a parancs által megadott zsákfájlba. A -a argumentummal bármilyen témát rögzíthetünk.
-    \item \begin{verbatim}
-        $ rosbag play [bag_name]
-    \end{verbatim}Lejátssza a meglévő táska tartalmát.
-\end{itemize}
+\begin{verbatim}
+    $ rosbag record [topic_1] [topic_2] -o [bag_name]
+    $ rosbag play [bag_name]
+\end{verbatim}
 A GUI eszköz amivel táskákkal dolgozhatunk az \href{http://wiki.ros.org/rqt_bag}{rqt\_bag}.
 
 \subsection{ROS mester}
@@ -244,5 +143,24 @@ A ROS klienskönyvtárak, köztük a roscpp és a rospy a csomópontok létrehoz
 
 A ROS Master IP-címe és portja a ROS\_MASTER\_URI környezeti változóban található. Ez a változó lehetővé teszi, hogy a ROS-csomópontok megtalálják a ROS Master-t. A csomópontok közötti kommunikáció nem fog megtörténni, ha ez a változó ki van kapcsolva. A localhost IP-cím vagy név használható, ha a ROS-t egyetlen rendszerben használjuk. Azonban egy elosztott hálózatban, ahol a feldolgozás sok fizikai gépen zajlik, helyesen kell definiálnunk a ROS\_MASTER\_URI-t. Csak így lesznek képesek a távoli csomópontok megtalálni és kommunikálni egymással. Egy elosztott rendszerben csak egy Masterre van szükségünk, és ahhoz, hogy a távoli ROS-csomópontok elérjék a Master-t, annak olyan számítógépen kell futnia, amelyet az összes többi számítógép sikeresen tud pingelni.
 \cite{joseph:ros}
-\bibliography{src/referenciák}
+
+\section{OpenCR}
+% könyvtárak részletezése
+OpenCR: - A motrokat irányító modul, a motorkontroller. Itt fontos megemlíteni, hogy több könyvtár is van mellyel a motrokat irányíthatjuk. A motrokat tudjuk konfigurálni különböző vezérlési módra, állíthatunk baud rate-t, stb.:
+\begin{enumerate}
+    \item \href{https://www.youtube.com/watch?v=0_M0Da9SHDw}{Dynamixel2Arduino - gyors és egyszerű vezérlése a motroknak Arduino IDE-ben}
+    \item \href{https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/}{Dynamixel sdk - ezt a könyvtárat használja a ROS}
+\end{enumerate}
+
+\section{Dynamixel}
+% Motorleírás, hogyanis műkődik a vezérlés
+Dynamixel motrok:
+\begin{enumerate}
+    \item \href{https://emanual.robotis.com/docs/en/dxl/x/xl430-w250/}{Motorleírás}
+\end{enumerate}
+
+\section{Rugós model kód}
+% A már kijavított kóddal mérni adatokat és ábrázolni őket
+
+\printbibliography[title={Referenciák}]
 \end{document}
