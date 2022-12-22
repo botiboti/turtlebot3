@@ -70,11 +70,11 @@ float x_1_tr = 0.0;
 float x_2_tr = 0.0;
  
 const int a = 4;
-float k = 8.0;
+float k = 15.0;
 float h = 0.1;
 
 long loop_timer = millis();
-float tau = 250.0;
+float tau = 1000.0;
 float Fl = 0.0;
 float Ml = 0.0;
 float Fr = 0.0;
@@ -127,7 +127,6 @@ void loop() {
   x_2r += h*(x_2_ar-x_2r)/tau;  
   
   loop_timer = millis();
-  delay(250);
 }
 
 float y(float x) {
