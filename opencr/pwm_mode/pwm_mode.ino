@@ -46,7 +46,8 @@
   #define DEBUG_SERIAL Serial
   const uint8_t DXL_DIR_PIN = 2; // DYNAMIXEL Shield DIR PIN
 #endif
- 
+
+#define PI 3.14156592359
 
 const uint8_t DXL_1 = 1;
 const uint8_t DXL_2 = 2;
@@ -54,15 +55,17 @@ const float DXL_PROTOCOL_VERSION = 2.0;
 
 Dynamixel2Arduino dxl(DXL_SERIAL, DXL_DIR_PIN);
 
-float x_1l = 1;
-float x_2l = -1;
-float x_1r = 1;
-float x_2r = -1;
-  
-float x_1_al = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-float x_2_al = sin(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-float x_1_ar = cos(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
-float x_2_ar = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+float x_1l = 1.0;
+float x_2l = -1.0;
+float x_1r = 1.0;
+float x_2r = -1.0;
+
+float pos1_rad = dxl.getPresentPosition(DXL_1, UNIT_DEGREE)*PI/180.0;
+float pos2_rad = dxl.getPresentPosition(DXL_2, UNIT_DEGREE)*PI/180.0;
+float x_1_al = cos(pos1_rad);
+float x_2_al = sin(pos1_rad);
+float x_1_ar = cos(pos2_rad);
+float x_2_ar = sin(pos2_rad);
 
 float x_1_tl = 0.0;
 float x_2_tl = 0.0;
@@ -70,19 +73,22 @@ float x_1_tr = 0.0;
 float x_2_tr = 0.0;
  
 const int a = 4;
-float k = 15.0;
-float h = 0.1;
+float k = 1.0;
+float h = 10.0;
 
 long loop_timer = millis();
-float tau = 1000.0;
+float tau = 250.0;
 float Fl = 0.0;
 float Ml = 0.0;
 float Fr = 0.0;
 float Mr = 0.0;
 
+int counter = 0;
+
 void setup() {
   // Use UART port of DYNAMIXEL Shield to debug.
-  DEBUG_SERIAL.begin(115200);
+  Serial.begin(115200);
+  // DEBUG_SERIAL.begin(115200);
   
   // Set Port baudrate to 1000000 bps. This has to match with DYNAMIXEL baudrate.
   dxl.begin(1000000);
@@ -96,39 +102,51 @@ void setup() {
   dxl.torqueOff(DXL_2);
   dxl.setOperatingMode(DXL_2, OP_PWM);
   dxl.torqueOn(DXL_2);
+
+  bool led = false;
+
+  while (!(Serial.available() > 0)) {
+  }
 }
 
 void loop() {
-  x_1_tl = 2*y(x_1l)-1;
-  x_2_tl = 2*y(x_2l)-1;
-  x_1_tr = 2*y(x_1r)-1;
-  x_2_tr = 2*y(x_2r)-1;
+    x_1_tl = 2.0*y(x_1l)-1.0;
+    x_2_tl = 2.0*y(x_2l)-1.0;
+    x_1_tr = 2.0*y(x_1r)-1.0;
+    x_2_tr = 2.0*y(x_2r)-1.0;
 
-  Fl = k*(x_1_tl-x_1_al)*x_2_al-k*(x_2_tl-x_2_al)*x_1_al;
-  Ml = 100*tanh(Fl);
-  Fr = k*(x_1_tr-x_1_ar)*x_2_ar-k*(x_2_tr-x_2_ar)*x_1_ar;
-  Mr = 100*tanh(Fr);
+    Fl = k*(x_1_tl-x_1_al)*x_2_al-k*(x_2_tl-x_2_al)*x_1_al;
+    Ml = 100.0*tanh(Fl);
+    Fr = k*(x_1_tr-x_1_ar)*x_2_ar-k*(x_2_tr-x_2_ar)*x_1_ar;
+    Mr = 100.0*tanh(Fr);
   
-  // Set Goal PWM using percentage (-100.0 [%] ~ 100.0 [%])
-  dxl.setGoalPWM(DXL_1, Ml, UNIT_PERCENT);
-  dxl.setGoalPWM(DXL_2, Mr, UNIT_PERCENT);
+    // Set Goal PWM using percentage (-100.0 [%] ~ 100.0 [%])
+    dxl.setGoalPWM(DXL_1, Ml, UNIT_PERCENT);
+    dxl.setGoalPWM(DXL_2, Mr, UNIT_PERCENT);
     
-  // update x's and x_a's 
-  x_1_al = cos(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-  x_2_al = sin(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-  x_1_ar = cos(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
-  x_2_ar = sin(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+    // update x's and x_a's 
+    pos1_rad = dxl.getPresentPosition(DXL_1, UNIT_DEGREE)*PI/180.0;
+    pos2_rad = dxl.getPresentPosition(DXL_2, UNIT_DEGREE)*PI/180.0;
+    x_1_al = cos(pos1_rad);
+    x_2_al = sin(pos1_rad);
+    x_1_ar = cos(pos2_rad);
+    x_2_ar = sin(pos2_rad);
 
-  h = millis()-loop_timer;
-
-  x_1l += h*(x_1_al-x_1l)/tau;
-  x_2l += h*(x_2_al-x_2l)/tau;
-  x_1r += h*(x_1_ar-x_1r)/tau;
-  x_2r += h*(x_2_ar-x_2r)/tau;  
+    h = millis()-loop_timer;
+    loop_timer = millis();
+    
+    x_1l += h*(x_1_al-x_1l)/tau;
+    x_2l += h*(x_2_al-x_2l)/tau;
+    x_1r += h*(x_1_ar-x_1r)/tau;
+    x_2r += h*(x_2_ar-x_2r)/tau;
   
-  loop_timer = millis();
+    Serial.println(h);
+    Serial.println(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
+    Serial.println(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
+    Serial.println(dxl.getPresentPWM(DXL_1, UNIT_PERCENT));
+    Serial.println(dxl.getPresentPWM(DXL_2, UNIT_PERCENT));
 }
 
 float y(float x) {
-  return 1/(1+exp(-a*x));
+  return 1.0/(1.0+exp(-a*x));
 }
