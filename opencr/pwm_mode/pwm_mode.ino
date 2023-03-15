@@ -87,8 +87,7 @@ int counter = 0;
 
 void setup() {
   // Use UART port of DYNAMIXEL Shield to debug.
-  Serial.begin(115200);
-  // DEBUG_SERIAL.begin(115200);
+  DEBUG_SERIAL.begin(115200);
   
   // Set Port baudrate to 1000000 bps. This has to match with DYNAMIXEL baudrate.
   dxl.begin(1000000);
@@ -105,7 +104,7 @@ void setup() {
 
   bool led = false;
 
-  while (!(Serial.available() > 0)) {
+  while (!(DEBUG_SERIAL.available() > 0)) {
   }
 }
 
@@ -140,11 +139,15 @@ void loop() {
     x_1r += h*(x_1_ar-x_1r)/tau;
     x_2r += h*(x_2_ar-x_2r)/tau;
   
-    Serial.println(h);
-    Serial.println(dxl.getPresentPosition(DXL_1, UNIT_DEGREE));
-    Serial.println(dxl.getPresentPosition(DXL_2, UNIT_DEGREE));
-    Serial.println(dxl.getPresentPWM(DXL_1, UNIT_PERCENT));
-    Serial.println(dxl.getPresentPWM(DXL_2, UNIT_PERCENT));
+    DEBUG_SERIAL.print(h);
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.print(dxl.getPresentPosition(DXL_1));
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.print(dxl.getPresentPosition(DXL_2));
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.print(dxl.getPresentPWM(DXL_1, UNIT_PERCENT));
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.println(dxl.getPresentPWM(DXL_2, UNIT_PERCENT));
 }
 
 float y(float x) {
