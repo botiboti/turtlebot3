@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import rospy
-from nav_msgs.msg import Odometry
+from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
@@ -17,14 +17,19 @@ def callback(msg):
     (roll, pitch, yaw) = euler_from_quaternion (orientation_list)
     print(yaw)
 
+
+
+
+
+
 #   Move robot
     move.linear.x = 0.5
-    move.linear.z = 0.0
+    move.linear.y = 0.0
     pub.publish(move)
 
 rospy.init_node('controller')
-sub = rospy.Subscriber('/odom', Odometry, callback)
-pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+sub = rospy.Subscriber('/joint_states', JointState, callback)
+pub = rospy.Publisher('/cmd_vels', Twist, queue_size=10)
 move = Twist()
 
 rospy.spin()
