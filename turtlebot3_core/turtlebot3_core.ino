@@ -29,6 +29,8 @@ void setup()
   nh.initNode();
   nh.getHardware()->setBaud(115200);
 
+  // feliratkozas az uj csatornara, cmd_vels_sub, ez majd a 
+  // ROS masteren indul a python script altal
   nh.subscribe(cmd_vels_sub);
   nh.subscribe(cmd_vel_sub);
   nh.subscribe(sound_sub);
@@ -85,9 +87,11 @@ void loop()
     // updateGoalVelocity();
     if ((t-tTime[6]) > CONTROL_MOTOR_TIMEOUT) 
     {
+      // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
       controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
     } 
     else {
+      // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, goal_velocity_from_cmd);
       controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, goal_velocities_from_cmd);
     }
     tTime[0] = t;
@@ -162,12 +166,19 @@ void loop()
   waitForSerialLink(nh.connected());
 }
 
+// bemasolt controlMotor fuggveny a motor_driver.cpp-bol, constrain-eli 
 bool controlMotors(const float wheel_radius, const float wheel_separation, float* value)
 {
   bool dxl_comm_result = false;
   
   float wheel_velocity_cmd[2];
-
+  
+  // sebessegertekek -265, 265 kozott ami 61 rpm 12 volt eseten az XL motroknak
+  // VELOCITY_CONSTANT_VALUE a turtlebot3_motor_driver.h-ban definialva, 41.69988758 es ez az ertek innen jon
+  // V = r * w = r     *        (RPM             * 0.10472)
+  //           = r     * (0.229 * Goal_Velocity) * 0.10472
+  //
+  // Goal_Velocity = V / r * 41.69988757710309
   wheel_velocity_cmd[LEFT]  = constrain(value[0]  * VELOCITY_CONSTANT_VALUE / wheel_radius, -BURGER_DXL_LIMIT_MAX_VELOCITY, BURGER_DXL_LIMIT_MAX_VELOCITY);
   wheel_velocity_cmd[RIGHT] = constrain(value[1] * VELOCITY_CONSTANT_VALUE / wheel_radius, -BURGER_DXL_LIMIT_MAX_VELOCITY, BURGER_DXL_LIMIT_MAX_VELOCITY);
 
@@ -190,6 +201,8 @@ void commandVelocityCallback(const geometry_msgs::Twist& cmd_vel_msg)
   tTime[6] = millis();
 }
 
+// callback fuggveny a cmd_vels msg-nek, constrain-t kiszedtem mert a controlMotors fuggvenyben mar benne van
+// igy most a linear.x lesz az egyik motor sebessege es linear.y lesz a masike
 void commandVelocitiesCallback(const geometry_msgs::Twist& cmd_vels_msg)
 {
   goal_velocities_from_cmd[0]  = cmd_vels_msg.linear.x;

@@ -216,6 +216,7 @@ Turtlebot3Sensor sensors;
 /*******************************************************************************
 * Declaration for controllers
 *******************************************************************************/
+// goal_velocities_from_cmd amit hasznalunk a python scripthez
 Turtlebot3Controller controllers;
 float zero_velocity[WHEEL_NUM] = {0.0, 0.0};
 float goal_velocity[WHEEL_NUM] = {0.0, 0.0};
