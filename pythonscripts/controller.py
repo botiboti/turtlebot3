@@ -6,10 +6,9 @@ from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 def callback(msg):
-# Print time
 
   now = rospy.get_rostime()
-  print(rospy.loginfo("Secs: %i Nsecs: %i", now.secs, now.nsecs))
+  rospy.loginfo("Secs: %i Nsecs: %i", now.secs, now.nsecs)
   
 # print(msg.pose.pose)
 
@@ -20,19 +19,13 @@ def callback(msg):
 
 # print(yaw)
 
-# az aktualis poziciok(rad) es sebessegek(rad/ms ????)
+# az aktualis poziciok(rad) es sebessegek(m/s) amit megadunk
 
-# act_pos_right = msg.position.right
-# act_vel_left = msg.velocity.left
-# act_vel_right = msg.velocity.right
-
-
-
+  rospy.loginfo(msg.position[0])  
 # a ros_core branch szerinti turtlebot_core-ban linear-nak x meg y
 # valtozojat hasznaljuk a kulonbozo motrok sebbesegenek megadasara
-  move.linear.x = 100
-  move.linear.y = 100
-  print(move)
+  move.linear.x = 0.01
+  move.linear.y = 0.01
   pub.publish(move)
 
 rospy.init_node('controller')

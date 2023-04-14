@@ -7,6 +7,12 @@ from geometry_msgs.msg import Twist
 class Controller():
     def __init__(self):
         # initiliaze
+        PI = 3.14156592359
+        x_1l = 1.0
+        x_2l = -1.0
+        x_1r = 1.0
+        x_2r = -1.0
+
         rospy.init_node('controller', anonymous=False)
 
         # tell user how to stop TurtleBot
@@ -19,9 +25,17 @@ class Controller():
         # Tip: You may need to change cmd_vel_mux/input/navi to /cmd_vel if you're not using TurtleBot2
         self.cmd_vels = rospy.Publisher('cmd_vels', Twist, queue_size=10)
         #  joint_states = rospy.Subscriber('/joint_states', JointState, callback)
+
+        # Twist is a datatype for velocity, linear.x egyik motor, mas
+        move_cmd = Twist()
+        # let's go forward at 0.2 m/s
+        move_cmd.linear.x = 0.1
+        # let's turn at 0 radians/s
+        move_cmd.linear.y = 0.0
+
      
         #TurtleBot will stop if we don't keep telling it to move.  How often should we tell it to move? 10 HZ
-        r = rospy.Rate(10);
+        r = rospy.Rate(100);
 
         # as long as you haven't ctrl + c keeping doing...
         while not rospy.is_shutdown():
@@ -30,13 +44,6 @@ class Controller():
 
             # ide jon a rugos fuggv., kell def.
             
-            # Twist is a datatype for velocity, linear.x egyik motor, mas
-            # move_cmd = Twist()
-            # let's go forward at 0.2 m/s
-            # move_cmd.linear.x = 10
-            # let's turn at 0 radians/s
-            # move_cmd.linear.y = 0
-
             # publish the velocity
             self.cmd_vels.publish(move_cmd)
             # wait for 0.1 seconds (10 HZ) and publish again
