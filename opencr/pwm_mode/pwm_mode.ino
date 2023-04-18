@@ -102,9 +102,11 @@ void setup() {
   dxl.setOperatingMode(DXL_2, OP_PWM);
   dxl.torqueOn(DXL_2);
 
-  bool led = false;
-
   while (!(DEBUG_SERIAL.available() > 0)) {
+  }
+  
+  if (DEBUG_SERIAL.available() > 0) {
+    k = DEBUG_SERIAL.parseFloat();
   }
 }
 
@@ -147,7 +149,9 @@ void loop() {
     DEBUG_SERIAL.print(", ");
     DEBUG_SERIAL.print(dxl.getPresentPWM(DXL_1, UNIT_PERCENT));
     DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.println(dxl.getPresentPWM(DXL_2, UNIT_PERCENT));
+    DEBUG_SERIAL.print(dxl.getPresentPWM(DXL_2, UNIT_PERCENT));
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.println(k);    
 }
 
 float y(float x) {
