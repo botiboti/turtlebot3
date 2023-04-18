@@ -72,7 +72,7 @@ float x_2_tl = 0.0;
 float x_1_tr = 0.0;
 float x_2_tr = 0.0;
  
-const int a = 4;
+int a = 2;
 float k = 1.0;
 float h = 10.0;
 
@@ -108,6 +108,12 @@ void setup() {
   if (DEBUG_SERIAL.available() > 0) {
     k = DEBUG_SERIAL.parseFloat();
   }
+  if (DEBUG_SERIAL.available() > 0) {
+    a = DEBUG_SERIAL.parseInt();
+  }
+  if (DEBUG_SERIAL.available() > 0) {
+    tau = DEBUG_SERIAL.parseFloat();
+  }
 }
 
 void loop() {
@@ -142,6 +148,10 @@ void loop() {
     x_2r += h*(x_2_ar-x_2r)/tau;
   
     DEBUG_SERIAL.print(h);
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.print(a);
+    DEBUG_SERIAL.print(", ");
+    DEBUG_SERIAL.print(tau);
     DEBUG_SERIAL.print(", ");
     DEBUG_SERIAL.print(dxl.getPresentPosition(DXL_1));
     DEBUG_SERIAL.print(", ");
