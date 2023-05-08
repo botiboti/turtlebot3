@@ -114,6 +114,13 @@ void setup() {
   if (DEBUG_SERIAL.available() > 0) {
     tau = DEBUG_SERIAL.parseFloat();
   }
+
+  randomSeed(analogRead(0));
+
+  x_1l = (float)random(-20,20)/10;
+  x_2l = (float)random(-20,20)/10;
+  x_1r = (float)random(-20,20)/10;
+  x_2r = (float)random(-20,20)/10;
 }
 
 void loop() {
