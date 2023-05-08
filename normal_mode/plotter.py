@@ -7,12 +7,12 @@ import re
 def takeFloat(str):
     return float(str[2:])
 
-# filtering and ordering files 
+# filtering and ordering files
 filenames = list(filter(lambda str: re.match('k_', str), next(walk("./"), (None, None, []))[2]))
 
 filenames.sort(key=takeFloat)
 
-# 
+#
 left_torque = []
 right_torque = []
 ks = []
@@ -23,7 +23,7 @@ for file in filenames:
     right = []
     k = 0
     f = open(file, "r")
-    for line in (f.readlines() [-100:]):
+    for line in (f.readlines() [-500:]):
         floats = line.split(", ")
         if (left == []):
             k = float(floats[-3:][2])
@@ -32,7 +32,7 @@ for file in filenames:
         # plt.plot(float(floats[-3:][2]), float(floats[-3:][0]), 'o', color='blue')
         # plt.plot(float(floats[-3:][2]), float(floats[-3:][1]), 'o', color='blue')
     if (k>10):
-        break              
+        break
     left_torque.append(sum(left)/len(left))
     right_torque.append(sum(right)/len(right))
     ks.append(k)

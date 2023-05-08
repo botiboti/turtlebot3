@@ -37,28 +37,31 @@ for file in filenames:
     left_avg = sum(left)/len(left)    
     right_avg = sum(right)/len(right)
 
-    # if (left_avg > 0 and right_avg < 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(right_avg)
-    # elif (left_avg < 0.9 and right_avg != 0):
-    #     left_torque.append(right_avg)
-    #     right_torque.append(-right_avg)
-    # elif (right_avg < 0.9 and left_avg != 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(-left_avg)
-    # elif (left_avg > 0 and right_avg > 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(-right_avg)
-    # elif (left_avg < 0 and right_avg > 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(right_avg)
-    # elif (left_avg < 0 and right_avg < 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(-right_avg)
-    
-    # elif (right_avg == 0 and left_avg == 0):
-    #     left_torque.append(left_avg)
-    #     right_torque.append(right_avg)
+    if (k>2.4):
+        if (left_avg > 0 and right_avg < 0):
+            left_torque.append(left_avg)
+            right_torque.append(right_avg)
+        elif (left_avg < 5.0 and right_avg != 0):
+            left_torque.append(right_avg)
+            right_torque.append(-right_avg)
+        elif (right_avg < 5.0 and left_avg != 0):
+            left_torque.append(left_avg)
+            right_torque.append(-left_avg)
+        elif (left_avg > 0 and right_avg > 0):
+            left_torque.append(left_avg)
+            right_torque.append(-right_avg)
+        elif (left_avg < 0 and right_avg > 0):
+            left_torque.append(left_avg)
+            right_torque.append(right_avg)
+        elif (left_avg < 0 and right_avg < 0):
+            left_torque.append(left_avg)
+            right_torque.append(-right_avg)
+        elif (right_avg == 0 and left_avg == 0):
+            left_torque.append(left_avg)
+            right_torque.append(right_avg)
+    else:
+        left_torque.append(left_avg)
+        right_torque.append(right_avg)
     
     ks.append(k)
 
@@ -68,4 +71,4 @@ plt.ylabel("M[%]")
 plt.scatter(ks, left_torque, color='blue')
 plt.scatter(ks, right_torque, color='blue')
 
-plt.savefig("plot1.png")
+plt.savefig("plot_levegoben_.png")
