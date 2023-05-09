@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import rospy
 import message_filters
 from sensor_msgs.msg import JointState
 from sensor_msgs.msg import LaserScan
