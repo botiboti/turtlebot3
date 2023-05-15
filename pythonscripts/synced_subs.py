@@ -14,11 +14,16 @@ if __name__ == '__main__':
             rospy.loginfo("Secs: %i Nsecs: %i", now.secs, now.nsecs)
             rospy.loginfo(joint_sub.position[0])
             rospy.loginfo(laser_sub.angle_increment)
+            
+            # x a bal kerek
+            # y a jobb kerek
+            # ide jon a core
             move.linear.x = 0.01
             move.linear.y = 0.01
             pub.publish(move)
-            # ide jon a core part
 
+
+            
         rospy.init_node('controller')
         joint_sub = message_filters.Subscriber('joint_states', JointState)
         laser_sub = message_filters.Subscriber('scan', LaserScan)
