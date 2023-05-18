@@ -24,8 +24,8 @@ def callback(msg):
   rospy.loginfo(msg.position[0])  
 # a ros_core branch szerinti turtlebot_core-ban linear-nak x meg y
 # valtozojat hasznaljuk a kulonbozo motrok sebbesegenek megadasara
-  move.linear.x = 0.01
-  move.linear.y = 0.01
+  move.linear.x = 0.1
+  move.linear.y = 0.0
   pub.publish(move)
 
 rospy.init_node('controller')

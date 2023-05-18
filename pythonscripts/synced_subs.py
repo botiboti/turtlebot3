@@ -18,8 +18,8 @@ if __name__ == '__main__':
             # x a bal kerek
             # y a jobb kerek
             # ide jon a core
-            move.linear.x = 0.01
-            move.linear.y = 0.01
+            move.linear.x = 0.1
+            move.linear.y = 0.1
             pub.publish(move)
 
 
