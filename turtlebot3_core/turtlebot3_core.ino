@@ -70,8 +70,8 @@ void setup()
   pinMode(LED_WORKING_CHECK, OUTPUT);
 
   setup_end = true;
-
-  motor_driver.setTorque(false);
+  //ha szabadon akarjuk hogy forogjanak, ki kell kapcsolni a stall torque-t
+  //motor_driver.setTorque(false);
 }
 
 /*******************************************************************************
@@ -90,7 +90,8 @@ void loop()
     if ((t-tTime[6]) > CONTROL_MOTOR_TIMEOUT) 
     {
       // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
-      //controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
+      // ezt is ki kell kapcsolni ha akarjuk hogy szabadon forogjanak a kerekek
+      controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
     } 
     else {
       // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, goal_velocity_from_cmd);
