@@ -70,6 +70,8 @@ void setup()
   pinMode(LED_WORKING_CHECK, OUTPUT);
 
   setup_end = true;
+
+  motor_driver.setTorque(false);
 }
 
 /*******************************************************************************
@@ -88,7 +90,7 @@ void loop()
     if ((t-tTime[6]) > CONTROL_MOTOR_TIMEOUT) 
     {
       // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
-      controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
+      //controlMotors(WHEEL_RADIUS, WHEEL_SEPARATION, zero_velocity);
     } 
     else {
       // controlMotor(WHEEL_RADIUS, WHEEL_SEPARATION, goal_velocity_from_cmd);
@@ -229,7 +231,7 @@ void motorPowerCallback(const std_msgs::Bool& power_msg)
   motor_driver.setTorque(dxl_power);
 }
 
-/*******************************************************************************
+/****************************************  ***************************************
 * Callback function for reset msg
 *******************************************************************************/
 void resetCallback(const std_msgs::Empty& reset_msg)
