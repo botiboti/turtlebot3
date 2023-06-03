@@ -7,21 +7,19 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     move = Twist()
 
-    f = open("negyzet4.txt", "r")
-    msg = f.readline().split(" ")
-    time = float(msg[0])
+    f = open("negyzet6.txt", "r")
+    lines = f.readlines()
+    idx = 0
     while not rospy.is_shutdown():
+        msg = lines[idx].split(" ")
+        nextmsg = lines[idx+1].split(" ")
         move.linear.x = float(msg[1])*0.033
         move.linear.y = float(msg[2])*0.033
         twist_pub.publish(move)
-        msg = f.readline()
-        if not msg:
-            break
-        msg = msg.split(" ")
         # addig ez a sebesseg amennyi ido van a kovetkezo lepesig
-        rospy.sleep(float(msg[0])-time)
-        print(float(msg[0])-time)
-        time = float(msg[0]) 
+        rospy.sleep(float(nextmsg[0])-float(msg[0]))
+        print(float(nextmsg[0])-float(msg[0]))
+        idx += 1
             
 if __name__ == '__main__':
     try:
