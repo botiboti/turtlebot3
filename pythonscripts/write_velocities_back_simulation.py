@@ -3,16 +3,16 @@ from geometry_msgs.msg import Twist
 from math import isclose
 
 def talker():
-    twist_pub = rospy.Publisher('/cmd_vels', Twist, queue_size=10)
+    twist_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     move = Twist()
 
-    f = open("negyzet4.txt", "r")
+    f = open("negyzet3.txt", "r")
     msg = f.readline().split(" ")
     time = float(msg[0])
     while not rospy.is_shutdown():
-        move.linear.x = float(msg[1])*0.033
-        move.linear.y = float(msg[2])*0.033
+        move.linear.x=((float(msg[1])+float(msg[2]))/2.0)*0.033
+        move.linear.z=((float(msg[1])-float(msg[2]))/0.16)*0.033
         twist_pub.publish(move)
         msg = f.readline()
         if not msg:
