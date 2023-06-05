@@ -7,12 +7,12 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     move = Twist()
 
-    f = open("negyzet3.txt", "r")
+    f = open("negyzet4.txt", "r")
     msg = f.readline().split(" ")
     time = float(msg[0])
     while not rospy.is_shutdown():
         move.linear.x=((float(msg[1])+float(msg[2]))/2.0)*0.033
-        move.linear.z=((float(msg[1])-float(msg[2]))/0.16)*0.033
+        move.angular.z=((float(msg[1])*0.033-float(msg[2])*0.033)/0.16)
         twist_pub.publish(move)
         msg = f.readline()
         if not msg:
